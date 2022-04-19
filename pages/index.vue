@@ -1,0 +1,3 @@
+<template>
+  <urna></urna>
+</template>
