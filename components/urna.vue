@@ -43,6 +43,9 @@
             <div>{{ c.number }}</div>
           </div>
           <div class="card-footer">
+            <button type="button" class="btn btn-danger" @click="candidatoDelete(c)">
+              Deletar
+            </button>
             <button type="button" class="btn btn-success" @click="candidatoNew={...c}">
               Editar
             </button>
@@ -61,6 +64,11 @@ export default {
   methods: {
     candidatoAdd() {
       this.candidatos.push({...this.candidatoNew});
+    },
+
+    async candidatoDelete(item) {
+      await Database.delete('candidatos', item);
+      this.candidatos = await Database.all('candidatos');
     },
 
     async fileToBase64(file) {
@@ -154,6 +162,16 @@ class Database {
 		};
 
     return items;
+  }
+
+  static async delete(table, item) {
+    let db = await this.init();
+    return new Promise((resolve, reject) => {
+      let trans = db.transaction([table], 'readwrite');
+      trans.oncomplete = e => { resolve(); };
+      let store = trans.objectStore(table);
+      store.delete(item.id);
+    });
   }
 }
 </script>
